@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Consulta de Normas Oficiais</title>
+</head>
+<body>
+    <h1>Consulta de Normas Oficiais</h1>
+    <form method="POST">
+        <input type="text" name="termo" placeholder="Termo para buscar" value="{{ termo }}" required />
+        <input type="text" name="artigo" placeholder="Artigo/Palavra-chave (opcional)" value="{{ artigo }}" />
+        <select name="norma">
+            <option value="">Todas as normas</option>
+            {% for norma in [
+                "Lei 8.212/91", "Lei 8.213/91", "Lei 8.742/93 (LOAS)",
+                "Decreto 3.048/99", "Decreto 6.214/07",
+                "Lei 10.779/03", "Portal INSS"
+            ] %}
+            <option value="{{ norma }}" {% if norma == norma_escolhida %}selected{% endif %}>{{ norma }}</option>
+            {% endfor %}
+        </select>
+        <select name="tipo_despacho">
+            <option value="">Não gerar despacho</option>
+            <option value="deferimento" {% if tipo_despacho == "deferimento" %}selected{% endif %}>Despacho de Deferimento</option>
+            <option value="indeferimento" {% if tipo_despacho == "indeferimento" %}selected{% endif %}>Despacho de Indeferimento</option>
+        </select>
+        <label>
+            <input type="checkbox" name="exportar" /> Exportar resultado em Word
+        </label>
+        <button type="submit">Buscar</button>
+    </form>
+    {% if resultados %}
+        <h2>Resultados para "{{ termo }}"</h2>
+        {% if artigo %}<h3>Filtro: {{ artigo }}</h3>{% endif %}
+        {% for resultado in resultados %}
+            <h3><a href="{{ resultado.url }}" target="_blank">{{ resultado.nome }}</a></h3>
+            <ul>
+            {% for trecho in resultado.trechos %}
+                <li>{{ trecho }}</li>
+            {% endfor %}
+            </ul>
+        {% endfor %}
+    {% endif %}
+    {% if despacho_texto %}
+        <h2>Despacho Gerado</h2>
+        <pre>{{ despacho_texto }}</pre>
+    {% endif %}
+</body>
+</html>
